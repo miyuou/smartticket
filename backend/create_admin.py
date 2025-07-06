@@ -6,15 +6,15 @@ from utils.auth import hash_password
 app = create_app()
 with app.app_context():
     db.create_all()  # au cas où
-    if not User.query.filter_by(email="admin@test.com").first():
+    if not User.query.filter_by(email="meryem@test.com").first():
         user = User(
-            nom="Admin",
-            email="admin@test.com",
+            nom="meryem",
+            email="meryem@test.com",
             mot_de_passe=hash_password("123456"),
             role="admin"
         )
         db.session.add(user)
         db.session.commit()
-        print("✅ Utilisateur admin@test.com créé avec succès")
+        print("✅ Utilisateur meryem@test.com créé avec succès")
     else:
         print("ℹ️ Utilisateur déjà existant")

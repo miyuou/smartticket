@@ -10,3 +10,5 @@ class Config:
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'jwt_secret')
     CORS_ORIGINS = os.getenv('CORS_ORIGINS', '*')
     UPLOAD_FOLDER = os.getenv('UPLOAD_FOLDER', 'uploads') 
+        # SQLite Configuration (temporary)
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URI', 'sqlite:///' + os.path.join(os.path.dirname(__file__), 'app.db'))

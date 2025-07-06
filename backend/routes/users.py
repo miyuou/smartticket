@@ -19,6 +19,10 @@ def create_user():
     data = request.get_json()
     if User.query.filter_by(email=data['email']).first():
         return jsonify({'msg': 'Email déjà utilisé'}), 400
+    
+    if 'mot_de_passe' not in data or not data['mot_de_passe']:
+        return jsonify({'msg': 'Le mot de passe est requis'}), 400
+   
     user = User(
         nom=data['nom'],
         email=data['email'],
