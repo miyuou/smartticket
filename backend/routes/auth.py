@@ -15,7 +15,7 @@ def login():
     user = User.query.filter_by(email=email).first()
     if not user or not check_password(password, user.mot_de_passe):
         return jsonify({'msg': 'Identifiants invalides'}), 401
-    access_token = create_access_token(identity=user.id, additional_claims={
+    access_token = create_access_token(identity=str(user.id), additional_claims={
         'role': user.role,
         'user_id': user.id
     })
