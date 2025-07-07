@@ -26,6 +26,5 @@ def create_app():
     app.register_blueprint(tickets_bp)
     app.register_blueprint(users_bp)
     app.register_blueprint(stats_bp)
-    app.register_blueprint(import_export_bp)
-
+    app.register_blueprint(import_export_bp, url_prefix='/import_export')
     return app 
