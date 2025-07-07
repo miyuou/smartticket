@@ -20,13 +20,14 @@ def create_user():
     if User.query.filter_by(email=data['email']).first():
         return jsonify({'msg': 'Email déjà utilisé'}), 400
     
-    if 'mot_de_passe' not in data or not data['mot_de_passe']:
+    # ✅ accepter aussi le champ 'password' (frontend l'envoie)
+    password = data.get('mot_de_passe') or data.get('password')
+    if not password:
         return jsonify({'msg': 'Le mot de passe est requis'}), 400
-   
     user = User(
         nom=data['nom'],
         email=data['email'],
-        mot_de_passe=hash_password(data['mot_de_passe']),
+        mot_de_passe=hash_password(password),
         role=data['role']
     )
     db.session.add(user)
