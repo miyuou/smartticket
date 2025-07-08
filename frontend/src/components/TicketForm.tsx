@@ -39,7 +39,7 @@ export default function TicketForm({
     statut_id: initialData?.statut_id || 1,
     type_id: initialData?.type_id || 1,
     departement_demandeur: initialData?.departement_demandeur || '',
-    technicien_ids: initialData?.technicien_ids || [],
+    technicien_ids: Array.isArray(initialData?.technicien_ids) ? initialData.technicien_ids : [],
   });
 
   const [technicians, setTechnicians] = useState<User[]>([]);
@@ -77,15 +77,17 @@ export default function TicketForm({
   };
 
   const handleTechnicianChange = (technicianId: number, checked: boolean) => {
+    const currentIds = Array.isArray(formData.technicien_ids) ? formData.technicien_ids : [];
+    
     if (checked) {
       setFormData({
         ...formData,
-        technicien_ids: [...formData.technicien_ids, technicianId]
+        technicien_ids: [...currentIds, technicianId]
       });
     } else {
       setFormData({
         ...formData,
-        technicien_ids: formData.technicien_ids.filter(id => id !== technicianId)
+        technicien_ids: currentIds.filter(id => id !== technicianId)
       });
     }
   };
@@ -206,7 +208,7 @@ export default function TicketForm({
                   <div key={tech.id} className="flex items-center space-x-2">
                     <Checkbox
                       id={`tech-${tech.id}`}
-                      checked={formData.technicien_ids.includes(tech.id)}
+                      checked={Array.isArray(formData.technicien_ids) && formData.technicien_ids.includes(tech.id)}
                       onCheckedChange={(checked) => handleTechnicianChange(tech.id, !!checked)}
                     />
                     <Label 

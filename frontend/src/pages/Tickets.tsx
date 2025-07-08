@@ -221,7 +221,11 @@ export default function Tickets() {
     setIsViewDialogOpen(true);
   };
 
-  const getTechnicianNames = (technicianIds: number[]) => {
+  const getTechnicianNames = (technicianIds: number[] | undefined | null) => {
+    if (!Array.isArray(technicianIds) || technicianIds.length === 0) {
+      return 'Non assigné';
+    }
+    
     return users
       .filter(user => technicianIds.includes(user.id))
       .map(user => user.nom)
@@ -236,9 +240,13 @@ export default function Tickets() {
     const matchesStatus = filterStatus === 'all' || ticket.statut_id.toString() === filterStatus;
     const matchesCategory = filterCategory === 'all' || ticket.categorie_id.toString() === filterCategory;
     const matchesTechnician = filterTechnician === 'all' || 
-                             ticket.technicien_ids.some(id => id.toString() === filterTechnician);
+                             (Array.isArray(ticket.technicien_ids) && ticket.technicien_ids.some(id => id.toString() === filterTechnician));
     
-    return matchesSearch && matchesStatus && matchesCategory && matchesTechnician;
+    // Role-based filtering: technicians only see tickets assigned to them
+    const matchesUserRole = user?.role === 'admin' || 
+                           (Array.isArray(ticket.technicien_ids) && ticket.technicien_ids.includes(user?.id || 0));
+    
+    return matchesSearch && matchesStatus && matchesCategory && matchesTechnician && matchesUserRole;
   });
 
   if (loading) {
@@ -399,7 +407,7 @@ export default function Tickets() {
                         <span>{ticket.departement_demandeur}</span>
                         <span>Catégorie: {ticket.categorie_id}</span>
                         <span>Type: {ticket.type_id}</span>
-                        {ticket.technicien_ids.length > 0 && (
+                        {Array.isArray(ticket.technicien_ids) && ticket.technicien_ids.length > 0 && (
                           <span>Techniciens: {getTechnicianNames(ticket.technicien_ids)}</span>
                         )}
                       </div>
@@ -502,7 +510,7 @@ export default function Tickets() {
                 </div>
               </div>
               
-              {selectedTicket.technicien_ids.length > 0 && (
+              {Array.isArray(selectedTicket.technicien_ids) && selectedTicket.technicien_ids.length > 0 && (
                 <div>
                   <Label>Techniciens assignés</Label>
                   <p className="mt-1 font-medium">
@@ -536,7 +544,7 @@ export default function Tickets() {
                 statut_id: editingTicket.statut_id,
                 type_id: editingTicket.type_id,
                 departement_demandeur: editingTicket.departement_demandeur,
-                technicien_ids: editingTicket.technicien_ids,
+                technicien_ids: Array.isArray(editingTicket.technicien_ids) ? editingTicket.technicien_ids : [],
               }}
               onSubmit={handleUpdateTicket}
               onCancel={() => setIsEditDialogOpen(false)}
